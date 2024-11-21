@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chatbot Interface</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background-color: #f4f4f4;
+margin: 0;
+padding: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+}
+.chat-container {
+background: white;
+width: 400px;
+border-radius: 10px;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+overflow: hidden;
+}
+.messages {
+padding: 20px;
+height: 400px;
+overflow-y: auto;
+border-bottom: 1px solid #ddd;
+}
+.message {
+margin-bottom: 10px;
+}
+.message.user {
+text-align: right;
+color: blue;
+}
+.message.assistant {
+text-align: left;
+color: green;
+}
+.input-container {
+display: flex;
+padding: 10px;
+}
+.input-container input {
+flex: 1;
+padding: 10px;
+border: 1px solid #ddd;
+border-radius: 5px;
+}
+.input-container button {
+margin-left: 10px;
+padding: 10px;
+border: none;
+background-color: #007BFF;
+color: white;
+border-radius: 5px;
+cursor: pointer;
+}
+</style>
+</head>
+<body>
+<div class="chat-container">
+<div class="messages" id="messages"></div>
+<div class="input-container">
+<input type="text" id="userInput" placeholder="Type a message...">
+<button onclick="sendMessage()">Send</button>
+</div>
+</div>
+<script>
+async function sendMessage() {
+const input = document.getElementById('userInput');
+const messagesDiv = document.getElementById('messages');
+const userMessage = input.value;
+if (!userMessage) return;
+// Add user message to the chat
+const userDiv = document.createElement('div');
+userDiv.className = 'message user';
+userDiv.textContent = userMessage;
+messagesDiv.appendChild(userDiv);
+// Send the message to the backend
+const response = await fetch('/chat', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ message: userMessage })
+});
+const data = await response.json();
+// Add assistant response to the chat
+const assistantDiv = document.createElement('div');
+assistantDiv.className = 'message assistant';
+assistantDiv.textContent = data.response;
+messagesDiv.appendChild(assistantDiv);
+input.value = ''; // Clear the input
+messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the bottom
+}
+</script>
+</body>
+</html>
